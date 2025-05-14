@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Мои задачи{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Мои задачи</h2>
+        <a href="{{ url_for('main.add_task') }}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Добавить задачу
+        </a>
+    </div>
+
+    <div class="filters card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-center">
+                <div class="col-md-3">
+                    <label for="category_id" class="form-label">Категория</label>
+                    <select name="category_id" id="category_id" class="form-select">
+                        <option value="">Все категории</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}"
+                                {% if request.args.get('category_id')|int == category.id %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="sort_by" class="form-label">Сортировка</label>
+                    <select name="sort_by" id="sort_by" class="form-select">
+                        <option value="created_at" {% if request.args.get('sort_by') == 'created_at' %}selected{% endif %}>По дате</option>
+                        <option value="due_date" {% if request.args.get('sort_by') == 'due_date' %}selected{% endif %}>По сроку</option>
+                        <option value="title" {% if request.args.get('sort_by') == 'title' %}selected{% endif %}>По названию</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="order" class="form-label">Порядок</label>
+                    <select name="order" id="order" class="form-select">
+                        <option value="desc" {% if request.args.get('order') == 'desc' %}selected{% endif %}>По убыванию</option>
+                        <option value="asc" {% if request.args.get('order') == 'asc' %}selected{% endif %}>По возрастанию</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check form-switch mt-4">
+                        <input class="form-check-input" type="checkbox" name="show_completed"
+                               id="show_completed" {% if request.args.get('show_completed') %}checked{% endif %}>
+                        <label class="form-check-label" for="show_completed">Показать выполненные</label>
+                    </div>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Применить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if tasks.items %}
+    <div class="tasks">
+        {% for task in tasks.items %}
+        <div class="card mb-3 {% if task.is_completed %}task-completed{% endif %} {% if task.is_urgent %}task-urgent{% endif %}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title mb-1">
+                            {{ task.title }}
+                            {% if task.category %}
+                            <span class="badge bg-primary">{{ task.category.name }}</span>
+                            {% endif %}
+                            {% if task.is_urgent %}
+                            <span class="badge bg-danger">Срочно</span>
+                            {% endif %}
+                        </h5>
+                        <p class="card-text">{{ task.description }}</p>
+                        <div class="text-muted small">
+                            <span><i class="bi bi-calendar-plus"></i> {{ task.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                            {% if task.due_date %}
+                            <span class="ms-3"><i class="bi bi-calendar-check"></i> {{ task.due_date.strftime('%d.%m.%Y') }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <div class="btn-group-vertical" role="group">
+                            <a href="{{ url_for('main.complete_task', task_id=task.id) }}"
+                               class="btn btn-sm {% if task.is_completed %}btn-warning{% else %}btn-success{% endif %} mb-2">
+                                {% if task.is_completed %}<i class="bi bi-arrow-counterclockwise"></i> Отменить{% else %}<i class="bi bi-check-circle"></i> Выполнить{% endif %}
+                            </a>
+                            <a href="{{ url_for('main.edit_task', task_id=task.id) }}" class="btn btn-sm btn-primary mb-2">
+                                <i class="bi bi-pencil"></i> Изменить
+                            </a>
+                            <a href="{{ url_for('main.delete_task', task_id=task.id) }}" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i> Удалить
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if tasks.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('main.index', page=tasks.prev_num, **request.args) }}">
+                    <i class="bi bi-chevron-left"></i> Назад
+                </a>
+            </li>
+            {% endif %}
+
+            {% for page_num in tasks.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=3) %}
+                {% if page_num %}
+                    <li class="page-item {% if page_num == tasks.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('main.index', page=page_num, **request.args) }}">{{ page_num }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if tasks.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('main.index', page=tasks.next_num, **request.args) }}">
+                    Вперед <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% else %}
+    <div class="alert alert-info">
+        Задачи не найдены. <a href="{{ url_for('main.add_task') }}" class="alert-link">Добавить задачу</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

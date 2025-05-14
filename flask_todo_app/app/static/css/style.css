@@ -1,0 +1,53 @@
+.task-completed {
+    opacity: 0.7;
+    background-color: #f8f9fa;
+}
+
+.task-urgent {
+    border-left: 4px solid #dc3545;
+}
+
+.task-due-soon {
+    border-left: 4px solid #ffc107;
+}
+
+.category-badge {
+    font-size: 0.8rem;
+    vertical-align: middle;
+}
+
+/* Адаптивные стили */
+@media (max-width: 768px) {
+    .filters .form-control, .filters .form-select {
+        margin-bottom: 10px;
+    }
+}
+
+.task-completed {
+    opacity: 0.8;
+    background-color: #f8f9fa;
+    border-left: 4px solid #28a745;
+}
+
+.task-urgent {
+    border-left: 4px solid #dc3545;
+}
+
+.task-completed .card-title,
+.task-completed .card-text {
+    text-decoration: line-through;
+    color: #6c757d;
+}
+
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.badge {
+    font-weight: normal;
+}

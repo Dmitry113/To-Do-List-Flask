@@ -1,0 +1,55 @@
+.venv/ 
+__pycache__/ 
+instance/
+
+# Файлы окружения
+.env
+.env.local
+.env.*.local
+
+# Виртуальное окружение
+.venv/
+venv/
+ENV/
+
+# Файлы IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Кэш Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Логи и базы данных
+*.log
+*.sqlite
+*.db
+*.db-journal
+instance/
+
+# Миграции (если не храните в репозитории)
+migrations/
+
+# Тестовые покрытия
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Статические файлы (если используете сборку)
+app/static/dist/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Файлы сессий и кэша Flask
+*.session
+*.cache
+
+# Файлы uploads (если есть загрузка файлов)
+app/uploads/
